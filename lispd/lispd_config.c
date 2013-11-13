@@ -236,6 +236,12 @@ int handle_uci_lispd_config_file(char *uci_conf_file_path) {
 
         if (strcmp(s->type, "daemon") == 0){
 
+            if (strcmp(uci_lookup_option_string(ctx, s, "router_mode"), "on") == 0){
+                router_mode = TRUE;
+            }else{
+                router_mode = FALSE;
+            }
+
             uci_debug = strtol(uci_lookup_option_string(ctx, s, "debug"),NULL,10);
 
 
@@ -529,6 +535,7 @@ int handle_lispd_config_file(char * lispdconf_conf_file)
             CFG_SEC("proxy-etr",            petr_mapping_opts, CFGF_MULTI),
             CFG_SEC("nat-traversal",        nat_traversal_opts, CFGF_MULTI),
             CFG_SEC("rloc-probing",         rloc_probing_opts, CFGF_MULTI),
+            CFG_BOOL("router-mode",         cfg_false, CFGF_NONE),
             CFG_INT("map-request-retries",  0, CFGF_NONE),
             CFG_INT("control-port",         0, CFGF_NONE),
             CFG_INT("debug",                0, CFGF_NONE),
@@ -557,6 +564,8 @@ int handle_lispd_config_file(char * lispdconf_conf_file)
     /*
      *  lispd config options
      */
+
+    router_mode   = cfg_getbool(cfg, "router-mode") ? TRUE:FALSE;
 
     ret = cfg_getint(cfg, "map-request-retries");
     if (ret != 0)
@@ -764,16 +773,16 @@ int handle_lispd_config_file(char * lispdconf_conf_file)
     }
 
     /* Check number of EID prefixes */
-#ifndef ROUTER
-    if (num_entries_in_db(get_local_db(AF_INET)) > 1){
-        lispd_log_msg (LISP_LOG_ERR, "LISPmob in mobile node mode only supports one IPv4 EID prefix and one IPv6 EID prefix");
-        exit_cleanup();
+    if (router_mode == FALSE){
+        if (num_entries_in_db(get_local_db(AF_INET)) > 1){
+            lispd_log_msg (LISP_LOG_ERR, "LISPmob in mobile node mode only supports one IPv4 EID prefix and one IPv6 EID prefix");
+            exit_cleanup();
+        }
+        if (num_entries_in_db(get_local_db(AF_INET6)) > 1){
+            lispd_log_msg (LISP_LOG_ERR, "LISPmob in mobile node mode only supports one IPv4 EID prefix and one IPv6 EID prefix");
+            exit_cleanup();
+        }
     }
-    if (num_entries_in_db(get_local_db(AF_INET6)) > 1){
-        lispd_log_msg (LISP_LOG_ERR, "LISPmob in mobile node mode only supports one IPv4 EID prefix and one IPv6 EID prefix");
-        exit_cleanup();
-    }
-#endif
 
 
     if (debug_level == 1){

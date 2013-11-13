@@ -38,7 +38,7 @@
 #include "lispd_map_cache.h"
 
 
-
+extern  uint8_t                 router_mode;
 extern  lispd_addr_list_t       *map_resolvers;
 extern  lispd_addr_list_t       *proxy_itrs;
 extern  lispd_map_cache_entry   *proxy_etrs;

@@ -8,6 +8,7 @@ package 'lispd'
 #	map_request_retries: Additional Map-Requests to send per map cache miss
 #	rloc_probing_interval: Period in seconds between RLOC probes. A value of 0 will dissable RLOC probing 
 config 'daemon'
+		option  'router_mode'			'off'
         option  'debug'                 '0' 
         option  'map_request_retries'   '2'
         

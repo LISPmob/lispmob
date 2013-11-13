@@ -6,11 +6,14 @@
 
 
 # General configuration
+#   router-mode: on  -> LISP routing capabilities enabled: xTR
+#                off -> LISP mobile node
 #	debug: Debug levels [0..3]
 #	map-request-retries: Additional Map-Requests to send per map cache miss
 
-debug                  = 0 
-map-request-retries    = 2
+router-mode             = off
+debug                   = 0 
+map-request-retries     = 2
 
 # RLOC Probing configuration
 #   rloc-probe-interval: interval at which periodic RLOC probes are sent
