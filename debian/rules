@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+# See http://people.canonical.com/~cjwatson/ubuntu-policy/policy.html/ch-source.html
+
+build:
+binary:
+binary-arch:
+binary-indep:
+clean:
