@@ -1,4 +1,5 @@
 Package: lispmob
+Source: lispmob
 Version: 0.3.3
 Maintainer: Rene Bartsch <rene@bartschnet.de>
 Description: LISPmob - Implementation of Locator/Identifier Separation Protocol
@@ -8,4 +9,4 @@ Description: LISPmob - Implementation of Locator/Identifier Separation Protocol
 Section: net
 Bugs: https://github.com/LISPmob/lispmob/issues
 Homepage: http://lispmob.org/
-Depends: libssl, libconfuse
+Build-Depends: libssl-dev, libconfuse-dev
