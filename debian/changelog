@@ -1,0 +1,15 @@
+lispmob (0.3.3ubuntu1) raring; urgency=low
+
+  * debian/changelog:
+    - Initial version added.
+
+  * debian/control:
+    - Initial version added.
+
+  * debian/copyright:
+    - Initial version added.
+
+  * debian/rules:
+    - Initial version added.
+
+ -- Rene Bartsch <rene@bartschnet.de>  Thu, 14 Nov 2013 17:11:50 +0100

@@ -1,0 +1,12 @@
+Package: lispmob
+Source: lispmob
+Version: 0.3.3
+Maintainer: Rene Bartsch <rene@bartschnet.de>
+Description: LISPmob - Implementation of Locator/Identifier Separation Protocol
+ LISPmob is an open-source LISP and LISP Mobile Node implementation for Linux, Android and OpenWRT. With LISPmob, hosts can change their network attachment point without losing connectivity, while maintaining the same IP address.
+ .
+ LISP Mobile Node is a particular case of LISP (Locator/ID separation Protocol), which is currently being developed within the IETF as a potential solution to the routing scalability problem documented in RFC 4984. It uses the concept of Endpoint IDentifiers (EIDs) to name hosts in edge networks, and Routing LOCators (RLOCs) for nodes in transit networks. EIDs and RLOCs are syntactically indistinguishable from current IPv4 and IPv6 addresses, enabling backwards compatibility with the existing Internet architecture. A distributed database, the mapping system, is responsible for maintaining the associations between EIDs and RLOCs.
+Section: net
+Bugs: https://github.com/LISPmob/lispmob/issues
+Homepage: http://lispmob.org/
+Build-Depends: libssl-dev, libconfuse-dev
