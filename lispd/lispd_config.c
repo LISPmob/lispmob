@@ -1394,7 +1394,7 @@ void validate_rloc_probing_parameters (
 int validate_configuration()
 {
     int result = GOOD;
-    if (map_servers == NULL){
+    if (map_servers == NULL && pxtr_mode == FALSE){
         lispd_log_msg(LISP_LOG_CRIT, "No Map Server configured.");
         result = BAD;
     }
