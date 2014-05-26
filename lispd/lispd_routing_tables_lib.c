@@ -319,42 +319,55 @@ void remove_created_rules()
             del_rule(AF_INET,0,iface->iface_index,iface->iface_index,RTN_UNICAST,iface->ipv4_address,32,NULL,0,0);
         }
         if (iface->ipv6_address->afi != AF_UNSPEC){
-            del_rule(AF_INET6,0,iface->iface_index,iface->iface_index,RTN_UNICAST,iface->ipv6_address,128,NULL,0,0);
+        	del_rule(AF_INET6,0,iface->iface_index,iface->iface_index,RTN_UNICAST,iface->ipv6_address,128,NULL,0,0);
         }
         interface_list = interface_list->next;
     }
     /* If router mode then remove lisp routing table to tun interface */
     if (router_mode == TRUE){
-        list = get_all_mappings(AF_UNSPEC);
-        list_elt = list;
-        while (list_elt != NULL){
-            mapping = list_elt->mapping;
-            if (del_rule(mapping->eid_prefix.afi,
-                    0,
-                    LISP_TABLE,
-                    RULE_TO_LISP_TABLE_PRIORITY,
-                    RTN_UNICAST,
-                    &(mapping->eid_prefix),
-                    mapping->eid_prefix_length,
-                    NULL,0,0)!=GOOD){
-                free_mapping_list(list, FALSE);
-            }
-            if (del_rule(mapping->eid_prefix.afi,
-                    0,
-                    RT_TABLE_MAIN,
-                    RULE_AVOID_LISP_TABLE_PRIORITY,
-                    RTN_UNICAST,
-                    NULL,0,
-                    &(mapping->eid_prefix),
-                    mapping->eid_prefix_length,
-                    0)!=GOOD){
-                free_mapping_list(list, FALSE);
-            }
+    	list = get_all_mappings(AF_UNSPEC);
+    	list_elt = list;
+    	if (pxtr_mode == FALSE){
 
-            list_elt = list_elt->next;
-        }
+    		while (list_elt != NULL){
+    			mapping = list_elt->mapping;
+    			del_rule(mapping->eid_prefix.afi,
+    					0,
+    					LISP_TABLE,
+    					RULE_TO_LISP_TABLE_PRIORITY,
+    					RTN_UNICAST,
+    					&(mapping->eid_prefix),
+    					mapping->eid_prefix_length,
+    					NULL,0,0);
+    		}
+    		del_rule(mapping->eid_prefix.afi,
+    				0,
+    				RT_TABLE_MAIN,
+    				RULE_AVOID_LISP_TABLE_PRIORITY,
+    				RTN_UNICAST,
+    				NULL,0,
+    				&(mapping->eid_prefix),
+    				mapping->eid_prefix_length,
+    				0);
+    		list_elt = list_elt->next;
+    	}else{
+    		while (list_elt != NULL){
+    			mapping = list_elt->mapping;
+    			del_route(mapping->eid_prefix.afi,
+    					tun_ifindex,
+    					&(mapping->eid_prefix),
+    					NULL,
+    					NULL,
+    					mapping->eid_prefix_length,
+    					0,
+    					RT_TABLE_MAIN);
+    			list_elt = list_elt->next;
+    		}
+    		free_mapping_list(list, FALSE);
+    	}
     }
 }
+
 
 /*
  * Request to the kernel the routing table with the selected afi

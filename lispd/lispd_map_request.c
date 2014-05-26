@@ -644,8 +644,13 @@ int send_map_request_miss(timer *t, void *arg)
     timer_map_request_argument          *argument = (timer_map_request_argument *)arg;
     lispd_map_cache_entry               *map_cache_entry = argument->map_cache_entry;
     nonces_list                         *nonces = map_cache_entry->nonces;
+    lisp_addr_t							*src_eid = &(argument->src_eid);
     lisp_addr_t                         *dst_rloc = NULL;
     map_request_opts                    opts;
+
+    if (pxtr_mode == TRUE){
+    	src_eid = NULL;
+    }
 
     memset ( &opts, FALSE, sizeof(map_request_opts));
 
@@ -676,7 +681,7 @@ int send_map_request_miss(timer *t, void *arg)
         opts.encap = TRUE;
         if ((dst_rloc == NULL) || (build_and_send_map_request_msg(
                 map_cache_entry->mapping,
-                &(argument->src_eid),
+                src_eid,
                 dst_rloc,
                 opts,
                 &nonces->nonce[nonces->retransmits]))==BAD){

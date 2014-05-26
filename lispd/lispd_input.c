@@ -37,6 +37,7 @@ void process_input_packet(int fd,
     int                 length = 0;
     uint8_t             ttl = 0;
     uint8_t             tos = 0;
+    int					int_afi = 0;
 
     struct lisphdr      *lisp_hdr = NULL;
     struct iphdr        *iph = NULL;
@@ -88,7 +89,8 @@ void process_input_packet(int fd,
                   get_char_from_lisp_addr_t(extract_dst_addr_from_packet((uint8_t *)iph)));
     
     if (iph->version == 4) {
-        
+    	int_afi = AF_INET;
+
         if(ttl!=0){ /*XXX It seems that there is a bug in uClibc that causes ttl=0 in OpenWRT. This is a quick workaround */
             iph->ttl = ttl;
         }
@@ -99,6 +101,8 @@ void process_input_packet(int fd,
         iph->check = ip_checksum((uint16_t*) iph, sizeof(struct iphdr));
         
     }else{
+    	int_afi = AF_INET6;
+
         ip6h = ( struct ip6_hdr *) iph;
 
         if(ttl!=0){ /*XXX It seems that there is a bug in uClibc that causes ttl=0 in OpenWRT. This is a quick workaround */
@@ -112,9 +116,14 @@ void process_input_packet(int fd,
         lispd_log_msg(LISP_LOG_DEBUG_2,"Data-Map-Notify received\n ");
         //Is there something to do here?
     }
-    
-    if ((write(tun_receive_fd, iph, length)) < 0){
-        lispd_log_msg(LISP_LOG_DEBUG_2,"lisp_input: write error: %s\n ", strerror(errno));
+    if (pxtr_mode == FALSE){
+    	if ((write(tun_receive_fd, iph, length)) < 0){
+    		lispd_log_msg(LISP_LOG_DEBUG_2,"lisp_input: write error: %s\n ", strerror(errno));
+    	}
+    }else{
+    	if ((send_packet(get_default_ctrl_socket(int_afi),(uint8_t*)iph,length)) < 0){
+    		lispd_log_msg(LISP_LOG_DEBUG_2,"lisp_input: write error: %s\n ", strerror(errno));
+    	}
     }
     
     free(packet);

@@ -11,6 +11,9 @@
 #
 #   router-mode: on  -> LISP routing capabilities enabled: xTR
 #                off -> LISP mobile node
+#   pxtr-mode:   on  -> LISP proxy routing capabilities enabled: PxTR.
+#                    -> router-mode should be on
+#                off -> LISP proxy routing capabilities disabled: PxTR
 #   debug: Specify the amount of debugging information lispd will print. On
 #     production systems, with a stable configuration this should be set to
 #     0. When experimenting, debugging issues, or preparing useful bug
@@ -21,6 +24,7 @@
 #     first one times out. The non-configurable timeout value is 2 seconds.
 
 router-mode            = off
+pxtr-mode              = off
 debug                  = 0 
 map-request-retries    = 2
 

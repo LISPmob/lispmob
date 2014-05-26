@@ -743,6 +743,8 @@ int select_src_rmt_locators_from_balancing_locators_vec (
     }else{
         if (src_blv->v4_balancing_locators_vec == NULL && src_blv->v6_balancing_locators_vec == NULL){
             lispd_log_msg(LISP_LOG_DEBUG_2,"get_rloc_from_balancing_locator_vec: No src locators available");
+        }else if (dst_blv->v4_balancing_locators_vec == NULL && dst_blv->v6_balancing_locators_vec == NULL){
+            lispd_log_msg(LISP_LOG_DEBUG_2,"get_rloc_from_balancing_locator_vec: No dst locators available");
         }else {
             lispd_log_msg(LISP_LOG_DEBUG_2,"get_rloc_from_balancing_locator_vec: Source and destination RLOCs have different AFI");
         }
@@ -890,8 +892,13 @@ int lisp_output (
         return (forward_native(original_packet,original_packet_length));
     }
 
-    /* If received packet doesn't have a source EID, forward it natively */
-    src_mapping = lookup_eid_in_db (tuple.src_addr);
+    if (pxtr_mode == TRUE){
+    	/* If PiTR, we use the destination address as the source mapping */
+    	src_mapping = lookup_eid_in_db (tuple.dst_addr);
+    }else{
+    	/* If received packet doesn't have a source EID, forward it natively */
+    	src_mapping = lookup_eid_in_db (tuple.src_addr);
+    }
     if (src_mapping == NULL){
         return (forward_native(original_packet,original_packet_length));
     }

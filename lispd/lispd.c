@@ -86,6 +86,7 @@ extern int capget(cap_user_header_t header, const cap_user_data_t data);
  *      config paramaters
  */
 uint8_t                      router_mode;
+uint8_t                      pxtr_mode;
 
 lispd_addr_list_t            *map_resolvers;
 int                          ddt_client;
@@ -339,17 +340,19 @@ int main(int argc, char **argv)
     request_route_table(RT_TABLE_MAIN, AF_INET6);
     process_netlink_msg(netlink_fd);
 
-    /*
-     *  Register to the Map-Server(s)
-     */
+    if (pxtr_mode == FALSE){
+    	/*
+    	 *  Register to the Map-Server(s)
+    	 */
 
-    map_register (NULL,NULL);
+    	map_register (NULL,NULL);
 
-    /*
-     * SMR proxy-ITRs list to be updated with new mappings
-     */
+    	/*
+    	 * SMR proxy-ITRs list to be updated with new mappings
+    	 */
 
-    init_smr(NULL,NULL);
+    	init_smr(NULL,NULL);
+    }
 
     /*
      * RLOC Probing proxy ETRs

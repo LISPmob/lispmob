@@ -262,6 +262,13 @@ int handle_uci_lispd_config_file(char *uci_conf_file_path) {
                 router_mode = FALSE;
             }
 
+            if (strcmp(uci_lookup_option_string(ctx, s, "pxtr_mode"), "on") == 0){
+            	pxtr_mode = TRUE;
+            	router_mode = TRUE;
+            }else{
+            	pxtr_mode = FALSE;
+            }
+
             uci_debug = strtol(uci_lookup_option_string(ctx, s, "debug"),NULL,10);
 
 
@@ -593,6 +600,7 @@ int handle_lispd_config_file(char * lispdconf_conf_file)
             CFG_INT("control-port",         0, CFGF_NONE),
             CFG_INT("debug",                0, CFGF_NONE),
             CFG_BOOL("router-mode",         cfg_false, CFGF_NONE),
+            CFG_BOOL("pxtr-mode",           cfg_false, CFGF_NONE),
             CFG_INT("rloc-probing-interval",0, CFGF_NONE),
             CFG_STR_LIST("map-resolver",    0, CFGF_NONE),
             CFG_STR_LIST("proxy-itrs",      0, CFGF_NONE),
@@ -625,6 +633,11 @@ int handle_lispd_config_file(char * lispdconf_conf_file)
      */
 
     router_mode   = cfg_getbool(cfg, "router-mode") ? TRUE:FALSE;
+
+    if (cfg_getbool(cfg, "pxtr-mode")){
+    	pxtr_mode = TRUE;
+    	router_mode = TRUE;
+    }
 
     ret = cfg_getint(cfg, "map-request-retries");
     if (ret >= 0){
@@ -1095,6 +1108,11 @@ int add_static_map_cache_entry(
     }else{
         free_map_cache_entry(map_cache_entry);
         return (BAD);
+    }
+
+    /* Recalculate the outgoing rloc vectors */
+    if (calculate_balancing_vectors (map_cache_entry->mapping,&((rmt_mapping_extended_info *)map_cache_entry->mapping->extended_info)->rmt_balancing_locators_vecs) != GOOD){
+    	lispd_log_msg(LISP_LOG_WARNING,"add_database_mapping: Couldn't calculate outgoing rloc prefenernce");
     }
 
     /*
