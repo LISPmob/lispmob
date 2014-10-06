@@ -21,13 +21,13 @@ requirements. LISPmob for rooted devices requires root access and Android
 version 2.3.6 or higher, while LISPmob for non-rooted devices requires Android 
 4.0 or higher. Please note that due to a bug on Android 4.4.0 and onwards, the 
 non-rooted version of LISPmob will not work on Android 4.4.0, 4.4.1, 4.4.2 or 
-4.4.3. The bug was fixed on Android 4.4.4. To ease the installation process we 
-strongly recommend installing LISPmob through Google Play (search for “lispmob”),
-however you can also download a precompiled APK package file from the LISPmob 
-website or compile the app from sources yourself. In any case, if you choose to 
-install LISPmob without using Google Play, the device must be configured to 
-allow the installation of packages from "unknown sources" (System Settings -> 
-Security -> Device Administration). 
+4.4.3. The bug was fixed on Android 4.4.4. (for IPv4 EIDs). To ease the 
+installation process we strongly recommend installing LISPmob through Google Play 
+(search for “lispmob”), however you can also download a precompiled APK package 
+file from the LISPmob website or compile the app from sources yourself. In any 
+case, if you choose to install LISPmob without using Google Play, the device 
+must be configured to allow the installation of packages from "unknown sources" 
+(System Settings -> Security -> Device Administration). 
 
 Building the code from source is supported on Linux and Mac OS X. To build 
 LISPmob for Android from source code you require some extra packages beside 

@@ -37,7 +37,9 @@
 #ifdef ANDROID
 #include "../android/jni/confuse_android/src/confuse.h"
 #else
+#ifndef OPEWNRT
 #include "confuse.h"
+#endif
 #endif
 #include "lispd_afi.h"
 #include "lispd_config.h"

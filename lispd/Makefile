@@ -25,7 +25,7 @@ LIBS		= -lconfuse -lrt -lm
 else
 ifeq "$(platform)" "openwrt"
 CFLAGS		+= -Wall -g -DOPENWRT
-LIBS		= -lconfuse -lrt -lm -luci
+LIBS		= -lrt -lm -luci
 else
 ERROR		= true
 endif
