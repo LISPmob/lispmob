@@ -180,6 +180,10 @@ config 'proxy-itr'
 #config 'proxy-itr'
 #        option   'address'              '202.51.247.10'         # sg-nus-pxtr
                  
+#config 'proxy-itr'
+#        option   'address'              '147.83.131.33'         # upc-pxtr
+
+
 # LISP beta-network IPv6 PITRs 
 
 #config 'proxy-itr'
@@ -200,5 +204,7 @@ config 'proxy-itr'
 #       option   'address'              '2001:700:0:52E::4' 			# uninett-pxtr
 #config 'proxy-itr'
 #       option   'address'              '2001:67C:21B4:107::b'    		# apan-pxtr
+#config 'proxy-itr'
+#       option   'address'              '2001:40B0:7500:205::9353:8321'         # upc-pxtr
         
         

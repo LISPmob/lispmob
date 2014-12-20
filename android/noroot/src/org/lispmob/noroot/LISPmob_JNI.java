@@ -9,6 +9,7 @@ public class LISPmob_JNI {
 	public static native void lispd_exit();
 	
 	static {
+		System.loadLibrary("json-c");
 		System.loadLibrary("lispd");
 	}
 }

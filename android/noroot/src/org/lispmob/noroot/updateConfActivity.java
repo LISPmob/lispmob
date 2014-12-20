@@ -451,7 +451,7 @@ public class updateConfActivity extends Activity {
 						.append("        193.162.145.46,\n")
 						.append("        193.34.30.222,\n")
 						.append("        193.34.31.222,\n")
-						.append("        147.83.131.32,\n")
+						.append("        147.83.131.33,\n")
 						.append("        158.38.1.92,\n")
 						.append("        203.181.249.172,\n")
 						.append("        202.51.247.10\n")
