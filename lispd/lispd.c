@@ -849,7 +849,7 @@ void exit_cleanup(void) {
     /* Remove source routing tables */
     remove_created_rules();
     /* Close timer file descriptors */
-    if (timers_fd != 0){
+    if (timers_fd != -1){
         remove_sig_timer();
     }
     /* Close receive sockets */

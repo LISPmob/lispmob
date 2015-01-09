@@ -202,7 +202,8 @@ int bind_socket(
     }
 
     if (bind(sock,sock_addr,sock_addr_len) != 0){
-        lispd_log_msg(LISP_LOG_WARNING, "bind_socket: %s", strerror(errno));
+        lispd_log_msg(LISP_LOG_WARNING, "bind_socket: %s. socket: %d, afi: %d, src addr: %s, src port: %d",
+        		strerror(errno), sock, afi, get_char_from_lisp_addr_t(*src_addr),src_port);
         result = BAD;
     }
     return (result);

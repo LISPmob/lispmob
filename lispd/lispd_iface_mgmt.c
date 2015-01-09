@@ -241,6 +241,9 @@ void process_address_change (
     lispd_mapping_list          *map_list   	    = NULL;
     int                         aux_afi             = 0;
 
+    lispd_log_msg(LISP_LOG_DEBUG_2,"precess_address_change: Process new address detected for interface %s -> %s",
+            iface->iface_name, get_char_from_lisp_addr_t(new_addr));
+
     /* Check if the addres is a global address*/
     if (is_link_local_addr(new_addr) == TRUE){
         lispd_log_msg(LISP_LOG_DEBUG_2,"precess_address_change: the extractet address from the netlink "
@@ -298,24 +301,26 @@ void process_address_change (
                 iface_addr,
                 (iface_addr->afi == AF_INET) ? 32 : 128,
                 NULL,0,0);
-    }
-    add_rule(new_addr.afi,
-            0,
-            iface->iface_index,
-            iface->iface_index,
-            RTN_UNICAST,
-            &new_addr,
-            (new_addr.afi == AF_INET) ? 32 : 128,
-            NULL,0,0);
 
-    switch (new_addr.afi){
-    case AF_INET:
-        bind_socket(iface->out_socket_v4,AF_INET,&new_addr,0);
-        break;
-    case AF_INET6:
-        bind_socket(iface->out_socket_v6,AF_INET6,&new_addr,0);
-        break;
+        add_rule(new_addr.afi,
+                0,
+                iface->iface_index,
+                iface->iface_index,
+                RTN_UNICAST,
+                &new_addr,
+                (new_addr.afi == AF_INET) ? 32 : 128,
+                NULL,0,0);
+
+        switch (new_addr.afi){
+        case AF_INET:
+            bind_socket(iface->out_socket_v4,AF_INET,&new_addr,0);
+            break;
+        case AF_INET6:
+            bind_socket(iface->out_socket_v6,AF_INET6,&new_addr,0);
+            break;
+        }
     }
+
 #endif
 
     aux_afi = iface_addr->afi;
@@ -930,18 +935,30 @@ void activate_interface_address(
     lispd_locators_list             **not_init_locators_list    = NULL;
     lispd_locators_list             **locators_list             = NULL;
     lispd_locator_elt               *locator                    = NULL;
+    int								*out_socket					= NULL;
 
 #ifndef VPNAPI
     switch(new_address.afi){
     case AF_INET:
-        iface->out_socket_v4 = new_device_binded_raw_socket(iface->iface_name,AF_INET);
-        bind_socket(iface->out_socket_v4,AF_INET,&new_address,0);
+    	out_socket = &(iface->out_socket_v4);
         break;
     case AF_INET6:
-        iface->out_socket_v6 = new_device_binded_raw_socket(iface->iface_name,AF_INET6);
-        bind_socket(iface->out_socket_v6,AF_INET6,&new_address,0);
+    	out_socket = &(iface->out_socket_v6);
         break;
     }
+
+    *out_socket = new_device_binded_raw_socket(iface->iface_name,new_address.afi);
+    bind_socket(*out_socket,new_address.afi,&new_address,0);
+
+    add_rule(new_address.afi,
+            0,
+            iface->iface_index,
+            iface->iface_index,
+            RTN_UNICAST,
+            &new_address,
+            (new_address.afi == AF_INET) ? 32 : 128,
+            NULL,0,0);
+
 #endif
     mapping_list = iface->head_mappings_list;
     /*
