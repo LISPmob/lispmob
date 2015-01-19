@@ -1011,9 +1011,12 @@ int lispd_get_iface_address_nl(
         return (BAD);
     }
     if (read_address_nl(ifa_index, addr)!=GOOD){
-    	lispd_log_msg(LISP_LOG_DEBUG_2,"lispd_get_iface_address_nl: Couldn't get iface address from afi");
+        lispd_log_msg(LISP_LOG_DEBUG_2,"lispd_get_iface_address_nl: Couldn't get %s address from interface %s",
+                (afi == AF_INET) ? "IPv4" : "IPv6", ifacename);
     	return (BAD);
     }
+
+    lispd_log_msg(LISP_LOG_DEBUG_2,"lispd_get_iface_address_nl: %s -> %s", ifacename, get_char_from_lisp_addr_t(*addr));
     return (GOOD);
 }
 
@@ -1102,18 +1105,20 @@ int read_address_nl(
                 rt_length = IFA_PAYLOAD (nlh);
                 for (;rt_length && RTA_OK (rth, rt_length); rth = RTA_NEXT (rth,rt_length))
                 {
-                	if (rth->rta_type == IFA_ADDRESS){
-                		if (ifa->ifa_family == AF_INET){
-                			memcpy (&(address->address),(struct in_addr *)RTA_DATA(rth),sizeof(struct in_addr));
-                			address->afi = AF_INET;
-                		}else if (ifa->ifa_family == AF_INET6){
-                			memcpy (&(address->address),(struct in6_addr *)RTA_DATA(rth),sizeof(struct in6_addr));
-                			address->afi = AF_INET6;
-                		}
-                		 if (is_link_local_addr(*address) == FALSE){
-                			 return (GOOD);
-                		 }
-                	}
+                    if (ifa->ifa_family == AF_INET && rth->rta_type == IFA_LOCAL){
+                        memcpy (&(address->address),(struct in_addr *)RTA_DATA(rth),sizeof(struct in_addr));
+                        address->afi = AF_INET;
+                        if (is_link_local_addr(*address) == FALSE){
+                            return (GOOD);
+                        }
+                    }
+                    if (ifa->ifa_family == AF_INET6 && rth->rta_type == IFA_ADDRESS){
+                        memcpy (&(address->address),(struct in6_addr *)RTA_DATA(rth),sizeof(struct in6_addr));
+                        address->afi = AF_INET6;
+                        if (is_link_local_addr(*address) == FALSE){
+                            return (GOOD);
+                        }
+                    }
                 }
                 break;
             default:
