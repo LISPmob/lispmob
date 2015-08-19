@@ -1118,6 +1118,7 @@ void iface_mac_address(char *iface_name, uint8_t *mac)
 
 	 fd = socket(AF_INET, SOCK_DGRAM, 0);
 
+	 memset(&ifr, 0, sizeof(ifr));
 	 ifr.ifr_addr.sa_family = AF_INET;
 	 strncpy(ifr.ifr_name, iface_name, IFNAMSIZ-1);
 
