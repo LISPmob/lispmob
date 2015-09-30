@@ -359,10 +359,10 @@ uint8_t *pkt_fill_mapping_record(
                 loc_ptr = (lispd_pkt_mapping_record_locator_t *)cur_ptr;
 
                 while ((void *)loc_ptr <= (void *)last_loc
-                       && (get_lisp_afi(itr_address->afi, NULL) > ntohs(loc_ptr->locator_afi)
-                           || get_lisp_afi(itr_address->afi, NULL) == (ntohs(loc_ptr->locator_afi)
-                               && memcmp(CO(loc_ptr, sizeof(lispd_pkt_mapping_record_locator_t)),
-                                         itr_address, get_addr_len(itr_address->afi)) <= 0))) {
+                        && (get_lisp_afi(itr_address->afi, NULL) > ntohs(loc_ptr->locator_afi)
+                                || (get_lisp_afi(itr_address->afi, NULL) == ntohs(loc_ptr->locator_afi)
+                                        && memcmp(CO(loc_ptr, sizeof(lispd_pkt_mapping_record_locator_t)),
+                                                itr_address, get_addr_len(itr_address->afi)) <= 0))) {
                     loc_ptr = (lispd_pkt_mapping_record_locator_t *)CO(loc_ptr,
                                                 sizeof(lispd_pkt_mapping_record_locator_t)
                                                 + get_addr_len(lisp2inetafi(ntohs(loc_ptr->locator_afi))));
