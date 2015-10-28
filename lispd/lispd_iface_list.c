@@ -179,8 +179,8 @@ lispd_iface_elt *add_interface(char *iface_name)
            aux_iface_list = aux_iface_list->next;
         aux_iface_list->next = iface_list;
     }
-    lispd_log_msg(LISP_LOG_DEBUG_2,"add_interface: Interface %s with interface index %d added to interfaces lists",
-            iface_name, iface->iface_index);
+    lispd_log_msg(LISP_LOG_DEBUG_2,"add_interface: Interface %s with interface index %d added to interfaces lists. Status: %s",
+            iface_name, iface->iface_index, (iface->status == UP) ? "UP":"DOWN");
     return (iface);
 }
 

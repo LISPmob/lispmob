@@ -34,7 +34,7 @@
 #include "lispd_external.h"
 #include <syslog.h>
 #include <stdarg.h>
-
+#include <time.h>
 
 FILE *fp = NULL;
 
@@ -115,9 +115,13 @@ static inline void lispd_log(
         const char  *format,
         va_list     args)
 {
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+
 #ifdef ANDROID
     if (fp != NULL){
-        fprintf(fp,"%s: ",log_name);
+        fprintf(fp,"[%d/%d/%d %d:%d:%d] %s: ",
+        		tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, log_name);
         vfprintf(fp,format,args);
         fprintf(fp,"\n");
         fflush(fp);
@@ -127,15 +131,17 @@ static inline void lispd_log(
 #else
 	if (daemonize){
 	    if (fp != NULL){
-	        fprintf(fp,"%s: ",log_name);
-	        vfprintf(fp,format,args);
-	        fprintf(fp,"\n");
+	    	fprintf(fp,"[%d/%d/%d %d:%d:%d] %s: ",
+	    			tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, log_name);
+	    	vfprintf(fp,format,args);
+	    	fprintf(fp,"\n");
 	        fflush(fp);
 	    }else{
 	        vsyslog(log_level,format,args);
 	    }
 	}else{
-	    printf("%s: ",log_name);
+        printf("[%d/%d/%d %d:%d:%d] %s: ",
+        		tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, log_name);
 	    vfprintf(stdout,format,args);
 		printf("\n");
 	}

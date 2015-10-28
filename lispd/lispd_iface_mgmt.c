@@ -241,6 +241,9 @@ void process_address_change (
     lispd_mapping_list          *map_list   	    = NULL;
     int                         aux_afi             = 0;
 
+    lispd_log_msg(LISP_LOG_DEBUG_2,"precess_address_change: Process new address detected for interface %s -> %s",
+            iface->iface_name, get_char_from_lisp_addr_t(new_addr));
+
     /* Check if the addres is a global address*/
     if (is_link_local_addr(new_addr) == TRUE){
         lispd_log_msg(LISP_LOG_DEBUG_2,"precess_address_change: the extractet address from the netlink "
@@ -298,24 +301,26 @@ void process_address_change (
                 iface_addr,
                 (iface_addr->afi == AF_INET) ? 32 : 128,
                 NULL,0,0);
-    }
-    add_rule(new_addr.afi,
-            0,
-            iface->iface_index,
-            iface->iface_index,
-            RTN_UNICAST,
-            &new_addr,
-            (new_addr.afi == AF_INET) ? 32 : 128,
-            NULL,0,0);
 
-    switch (new_addr.afi){
-    case AF_INET:
-        bind_socket(iface->out_socket_v4,AF_INET,&new_addr,0);
-        break;
-    case AF_INET6:
-        bind_socket(iface->out_socket_v6,AF_INET6,&new_addr,0);
-        break;
+        add_rule(new_addr.afi,
+                0,
+                iface->iface_index,
+                iface->iface_index,
+                RTN_UNICAST,
+                &new_addr,
+                (new_addr.afi == AF_INET) ? 32 : 128,
+                NULL,0,0);
+
+        switch (new_addr.afi){
+        case AF_INET:
+            bind_socket(iface->out_socket_v4,AF_INET,&new_addr,0);
+            break;
+        case AF_INET6:
+            bind_socket(iface->out_socket_v6,AF_INET6,&new_addr,0);
+            break;
+        }
     }
+
 #endif
 
     aux_afi = iface_addr->afi;
@@ -930,18 +935,30 @@ void activate_interface_address(
     lispd_locators_list             **not_init_locators_list    = NULL;
     lispd_locators_list             **locators_list             = NULL;
     lispd_locator_elt               *locator                    = NULL;
+    int								*out_socket					= NULL;
 
 #ifndef VPNAPI
     switch(new_address.afi){
     case AF_INET:
-        iface->out_socket_v4 = new_device_binded_raw_socket(iface->iface_name,AF_INET);
-        bind_socket(iface->out_socket_v4,AF_INET,&new_address,0);
+    	out_socket = &(iface->out_socket_v4);
         break;
     case AF_INET6:
-        iface->out_socket_v6 = new_device_binded_raw_socket(iface->iface_name,AF_INET6);
-        bind_socket(iface->out_socket_v6,AF_INET6,&new_address,0);
+    	out_socket = &(iface->out_socket_v6);
         break;
     }
+
+    *out_socket = new_device_binded_raw_socket(iface->iface_name,new_address.afi);
+    bind_socket(*out_socket,new_address.afi,&new_address,0);
+
+    add_rule(new_address.afi,
+            0,
+            iface->iface_index,
+            iface->iface_index,
+            RTN_UNICAST,
+            &new_address,
+            (new_address.afi == AF_INET) ? 32 : 128,
+            NULL,0,0);
+
 #endif
     mapping_list = iface->head_mappings_list;
     /*
@@ -994,9 +1011,12 @@ int lispd_get_iface_address_nl(
         return (BAD);
     }
     if (read_address_nl(ifa_index, addr)!=GOOD){
-    	lispd_log_msg(LISP_LOG_DEBUG_2,"lispd_get_iface_address_nl: Couldn't get iface address from afi");
+        lispd_log_msg(LISP_LOG_DEBUG_2,"lispd_get_iface_address_nl: Couldn't get %s address from interface %s",
+                (afi == AF_INET) ? "IPv4" : "IPv6", ifacename);
     	return (BAD);
     }
+
+    lispd_log_msg(LISP_LOG_DEBUG_2,"lispd_get_iface_address_nl: %s -> %s", ifacename, get_char_from_lisp_addr_t(*addr));
     return (GOOD);
 }
 
@@ -1085,18 +1105,20 @@ int read_address_nl(
                 rt_length = IFA_PAYLOAD (nlh);
                 for (;rt_length && RTA_OK (rth, rt_length); rth = RTA_NEXT (rth,rt_length))
                 {
-                	if (rth->rta_type == IFA_ADDRESS){
-                		if (ifa->ifa_family == AF_INET){
-                			memcpy (&(address->address),(struct in_addr *)RTA_DATA(rth),sizeof(struct in_addr));
-                			address->afi = AF_INET;
-                		}else if (ifa->ifa_family == AF_INET6){
-                			memcpy (&(address->address),(struct in6_addr *)RTA_DATA(rth),sizeof(struct in6_addr));
-                			address->afi = AF_INET6;
-                		}
-                		 if (is_link_local_addr(*address) == FALSE){
-                			 return (GOOD);
-                		 }
-                	}
+                    if (ifa->ifa_family == AF_INET && rth->rta_type == IFA_LOCAL){
+                        memcpy (&(address->address),(struct in_addr *)RTA_DATA(rth),sizeof(struct in_addr));
+                        address->afi = AF_INET;
+                        if (is_link_local_addr(*address) == FALSE){
+                            return (GOOD);
+                        }
+                    }
+                    if (ifa->ifa_family == AF_INET6 && rth->rta_type == IFA_ADDRESS){
+                        memcpy (&(address->address),(struct in6_addr *)RTA_DATA(rth),sizeof(struct in6_addr));
+                        address->afi = AF_INET6;
+                        if (is_link_local_addr(*address) == FALSE){
+                            return (GOOD);
+                        }
+                    }
                 }
                 break;
             default:
