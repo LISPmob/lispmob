@@ -233,13 +233,19 @@ uint8_t *pkt_fill_mapping_record(
         return NULL;
     }
 
-    rec->ttl                    = htonl(DEFAULT_MAP_REGISTER_TIMEOUT);
+
     rec->locator_count          = mapping->locator_count;
     rec->eid_prefix_length      = mapping->eid_prefix_length;
     rec->action                 = 0;
-    rec->authoritative          = 1;
     rec->version_hi             = 0;
     rec->version_low            = 0;
+    if (!pxtr_mode){
+        rec->ttl                    = htonl(DEFAULT_MAP_REGISTER_TIMEOUT);
+        rec->authoritative          = 1;
+    }else{
+        rec->ttl                    = 0;
+        rec->authoritative          = 0;
+    }
 
     cur_ptr = (uint8_t *)&(rec->eid_prefix_afi);
     cur_ptr = pkt_fill_eid(cur_ptr, mapping);

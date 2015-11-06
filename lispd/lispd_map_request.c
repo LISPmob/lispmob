@@ -291,17 +291,21 @@ int process_map_request_record(
      }
      requested_mapping->eid_prefix_length = record->eid_prefix_length;
 
-     /* Check the existence of the requested EID */
-     /*  We don't use prefix mask and use by default 32 or 128*/
-     mapping = lookup_eid_in_db(requested_mapping->eid_prefix);
-     if (!mapping){
-         lispd_log_msg(LISP_LOG_DEBUG_1,"The requested EID doesn't belong to this node: %s/%d",
-                 get_char_from_lisp_addr_t(requested_mapping->eid_prefix),
-                 requested_mapping->eid_prefix_length);
-         free_mapping_elt (requested_mapping);
-         return (BAD);
+     if (!pxtr_mode)
+     {
+         /* Check the existence of the requested EID */
+         /*  We don't use prefix mask and use by default 32 or 128*/
+         mapping = lookup_eid_in_db(requested_mapping->eid_prefix);
+         if (!mapping){
+             lispd_log_msg(LISP_LOG_DEBUG_1,"The requested EID doesn't belong to this node: %s/%d",
+                     get_char_from_lisp_addr_t(requested_mapping->eid_prefix),
+                     requested_mapping->eid_prefix_length);
+             free_mapping_elt (requested_mapping);
+             return (BAD);
+         }
+     }else{
+         mapping = requested_mapping;
      }
-     free_mapping_elt (requested_mapping);
 
      /* Set flags for Map-Reply */
      opts.send_rec   = 1;
@@ -309,6 +313,7 @@ int process_map_request_record(
      opts.rloc_probe = rloc_probe;
 
      err = build_and_send_map_reply_msg(mapping, local_rloc, remote_rloc, dst_port, nonce, opts);
+     free_mapping_elt (requested_mapping);
 
      return (err);
  }
