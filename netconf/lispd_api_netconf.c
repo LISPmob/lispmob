@@ -26,7 +26,6 @@
 #include "lispd_api_netconf.h"
 #include "../lispd/lib/util.h"
 #include "../lispd/lib/lmlog.h"
-#include "../lispd/liblisp/liblisp.h"
 
 
 
@@ -47,11 +46,6 @@ pid_t  sid                                  = 0;
 int     ipv4_data_input_fd                  = 0;
 int     ipv6_data_input_fd                  = 0;
 int     netlink_fd                          = 0;
-
-/* NAT */
-int nat_aware = FALSE;
-int nat_status = UNKNOWN;
-nonces_list_t *nat_ir_nonce = NULL;
 
 sockmstr_t *smaster = NULL;
 lisp_ctrl_dev_t *ctrl_dev;

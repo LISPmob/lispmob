@@ -21,6 +21,7 @@
 #include "vpnapi_output.h"
 #include "vpnapi.h"
 #include "../data-plane.h"
+#include "../../fwd_policies/fwd_policy.h"
 #include "../../liblisp/liblisp.h"
 #include "../../lib/packets.h"
 #include "../../lib/sockets.h"
@@ -92,7 +93,7 @@ vpnapi_output_unicast(lbuf_t *b, packet_tuple_t *tuple)
             return (BAD);
         }
         fe = fi->fwd_info;
-        if (fe->srloc && fe->drloc)  {
+        if (fe && fe->srloc && fe->drloc)  {
             switch (lisp_addr_ip_afi(fe->srloc)){
             case AF_INET:
                 fe->out_sock = &(((vpnapi_data_t *)dplane_vpnapi.datap_data)->ipv4_data_socket);

@@ -453,7 +453,6 @@ lmapi_xtr_mr_create(lmapi_connection_t *conn, lmapi_msg_hdr_t *hdr,
     mr_list_xml = get_inner_xmlNodePtr(root_element,"map-resolvers");
     mr_list_xml = get_inner_xmlNodePtr(mr_list_xml,"map-resolver");
 
-
     while (mr_list_xml != NULL){
 
         mr_addr_xml = get_inner_xmlNodePtr(mr_list_xml,"map-resolver-address");
@@ -582,12 +581,12 @@ lmapi_xtr_ms_create(lmapi_connection_t *conn, lmapi_msg_hdr_t *hdr,
     xmlFreeDoc(doc);
     doc = NULL;
 
-    /* Reprogram Map Register for local EIDs */
-    program_map_register(xtr);
-
     //Everything fine. We replace the old list with the new one
     glist_destroy(xtr->map_servers);
     xtr->map_servers = map_servers_list;
+
+    /* Reprogram Map Register for local EIDs */
+    program_map_register(xtr);
 
     LMLOG(LDBG_1, "LMAPI: List of Map Servers successfully created");
     map_servers_dump(xtr, LDBG_1);
