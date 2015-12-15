@@ -8,9 +8,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=lispmob
-PKG_REV:=27a213c1352871a5775fd14f4b71cdc7be5ba1e8
-PKG_VERSION:=0.5.1
-PKG_RELEASE:=5
+PKG_REV:=cdaf4806165b17589e644bbd3d944af1756a76b5
+PKG_VERSION:=0.5.2
+PKG_RELEASE:=6
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_URL:=git://github.com/LISPmob/lispmob.git
@@ -56,10 +56,6 @@ define Package/lispmob/install
 	$(INSTALL_CONF) $(PKG_BUILD_DIR)/openWRT/lispd.uci.example $(1)/etc/config/lispd
 	$(INSTALL_DIR) $(1)/etc/init.d
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/openWRT/openwrt.init.script $(1)/etc/init.d/lisp
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/controller/lisp
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/openWRT/controller-lisp.lua $(1)/usr/lib/lua/luci/controller/lisp/lisp.lua
-	$(INSTALL_DIR) $(1)/usr/lib/lua/luci/model/cbi/lisp
-	$(INSTALL_CONF) $(PKG_BUILD_DIR)/openWRT/model-cbi-lisp.lua $(1)/usr/lib/lua/luci/model/cbi/lisp/lisp.lua
 endef
 
 $(eval $(call BuildPackage,lispmob))
