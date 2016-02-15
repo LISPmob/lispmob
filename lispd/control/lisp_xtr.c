@@ -1031,6 +1031,9 @@ build_and_send_map_request(lisp_xtr_t *xtr, lisp_addr_t *seid,
 
 
     /* Encapsulate message and send it to the map resolver */
+
+    lisp_msg_encap(b, LISP_CONTROL_PORT, LISP_CONTROL_PORT, seid, deid);
+
     srloc = NULL;
     drloc = get_map_resolver(xtr);
     if (!drloc){
