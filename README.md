@@ -1,3 +1,7 @@
+*LISPmob changed its name to Open Overlay Router, and the new repository is at
+https://github.com/OpenOverlayRouter/oor This repository is maintained for
+historical reasons, and will no longer be updated.*
+
 Overview
 --------
 
